@@ -13,7 +13,7 @@ def main() -> None:
     args = parser.parse_args()
 
     root = Path(__file__).resolve().parents[1]
-    quality, eda = build_analysis(root)
+    quality, eda, _ = build_analysis(root)
     if args.summary:
         print(
             json.dumps(

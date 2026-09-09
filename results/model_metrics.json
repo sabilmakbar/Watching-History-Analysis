@@ -1,0 +1,135 @@
+{
+  "eligible_content_types": [
+    "catchup",
+    "vod"
+  ],
+  "features": [
+    "playback_location",
+    "platform",
+    "referrer_group",
+    "content_type",
+    "category_name",
+    "player_name",
+    "autoplay",
+    "is_login",
+    "is_premium",
+    "os_name",
+    "browser_name",
+    "hour",
+    "day_of_week"
+  ],
+  "label": "completed",
+  "models": {
+    "dummy_prior": {
+      "brier_score": 0.171707,
+      "pr_auc": 0.21768,
+      "roc_auc": 0.5
+    },
+    "logistic_regression": {
+      "brier_score": 0.157725,
+      "pr_auc": 0.364967,
+      "roc_auc": 0.689778
+    }
+  },
+  "split": {
+    "sort_order": [
+      "play_time",
+      "logical_record_number"
+    ],
+    "strategy": "chronological 80/20 holdout",
+    "test_end_utc": "2020-02-16T16:59:36+00:00",
+    "test_label_rate": 0.21768,
+    "test_rows": 13575,
+    "test_start_utc": "2020-02-13T15:48:31+00:00",
+    "train_end_utc": "2020-02-13T15:48:21+00:00",
+    "train_label_rate": 0.255253,
+    "train_rows": 54299,
+    "train_start_utc": "2020-02-01T10:36:40+00:00"
+  },
+  "top_coefficients": {
+    "negative": [
+      {
+        "coefficient": -0.791527,
+        "feature": "content_type_catchup"
+      },
+      {
+        "coefficient": -0.769628,
+        "feature": "browser_name_UC Browser"
+      },
+      {
+        "coefficient": -0.74197,
+        "feature": "referrer_group_fimela"
+      },
+      {
+        "coefficient": -0.603907,
+        "feature": "category_name_Korea"
+      },
+      {
+        "coefficient": -0.573349,
+        "feature": "category_name_Movies"
+      },
+      {
+        "coefficient": -0.545043,
+        "feature": "category_name_Music"
+      },
+      {
+        "coefficient": -0.540571,
+        "feature": "referrer_group_google"
+      },
+      {
+        "coefficient": -0.531317,
+        "feature": "is_premium_False"
+      },
+      {
+        "coefficient": -0.5116,
+        "feature": "autoplay_False"
+      },
+      {
+        "coefficient": -0.447459,
+        "feature": "category_name_Champions"
+      }
+    ],
+    "positive": [
+      {
+        "coefficient": 0.884424,
+        "feature": "referrer_group_merdeka"
+      },
+      {
+        "coefficient": 0.657848,
+        "feature": "category_name_News"
+      },
+      {
+        "coefficient": 0.650851,
+        "feature": "category_name_Sports"
+      },
+      {
+        "coefficient": 0.552423,
+        "feature": "browser_name_LINE"
+      },
+      {
+        "coefficient": 0.45252,
+        "feature": "category_name_Education"
+      },
+      {
+        "coefficient": 0.438189,
+        "feature": "content_type_vod"
+      },
+      {
+        "coefficient": 0.413541,
+        "feature": "category_name_Vlog"
+      },
+      {
+        "coefficient": 0.384206,
+        "feature": "os_name_infrequent_sklearn"
+      },
+      {
+        "coefficient": 0.363765,
+        "feature": "category_name_Entertainment"
+      },
+      {
+        "coefficient": 0.36125,
+        "feature": "referrer_group_dream"
+      }
+    ]
+  }
+}

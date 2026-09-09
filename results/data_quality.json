@@ -1,0 +1,126 @@
+{
+  "coercion": {
+    "booleans": {
+      "autoplay": {
+        "missing": 38960,
+        "parse_failures": 0
+      },
+      "completed": {
+        "missing": 38937,
+        "parse_failures": 0
+      },
+      "has_ad": {
+        "missing": 0,
+        "parse_failures": 0
+      },
+      "is_login": {
+        "missing": 0,
+        "parse_failures": 0
+      },
+      "is_premium": {
+        "missing": 0,
+        "parse_failures": 0
+      }
+    },
+    "numeric": {
+      "average_bitrate": {
+        "missing": 4946,
+        "parse_failures": 0
+      },
+      "buffer_duration": {
+        "missing": 0,
+        "parse_failures": 0
+      },
+      "play_duration": {
+        "missing": 0,
+        "parse_failures": 0
+      },
+      "total_bytes": {
+        "missing": 0,
+        "parse_failures": 0
+      }
+    },
+    "timestamps": {
+      "end_time": {
+        "missing": 0,
+        "parse_failures": 0
+      },
+      "play_time": {
+        "missing": 0,
+        "parse_failures": 0
+      }
+    }
+  },
+  "records": {
+    "accepted": 106811,
+    "parsed": 106823,
+    "rejected": 12
+  },
+  "rejected_records": [
+    {
+      "logical_record_number": 23508,
+      "reason": "expected 41 fields, found 43",
+      "source_line_start": 23510
+    },
+    {
+      "logical_record_number": 36945,
+      "reason": "expected 41 fields, found 42",
+      "source_line_start": 36947
+    },
+    {
+      "logical_record_number": 43787,
+      "reason": "expected 41 fields, found 42",
+      "source_line_start": 43789
+    },
+    {
+      "logical_record_number": 45436,
+      "reason": "expected 41 fields, found 49",
+      "source_line_start": 45438
+    },
+    {
+      "logical_record_number": 52140,
+      "reason": "expected 41 fields, found 42",
+      "source_line_start": 52142
+    },
+    {
+      "logical_record_number": 73469,
+      "reason": "expected 41 fields, found 42",
+      "source_line_start": 73471
+    },
+    {
+      "logical_record_number": 75102,
+      "reason": "expected 41 fields, found 42",
+      "source_line_start": 75104
+    },
+    {
+      "logical_record_number": 87927,
+      "reason": "expected 41 fields, found 42",
+      "source_line_start": 87929
+    },
+    {
+      "logical_record_number": 98452,
+      "reason": "expected 41 fields, found 42",
+      "source_line_start": 98454
+    },
+    {
+      "logical_record_number": 98770,
+      "reason": "expected 41 fields, found 42",
+      "source_line_start": 98772
+    },
+    {
+      "logical_record_number": 101046,
+      "reason": "expected 41 fields, found 42",
+      "source_line_start": 101048
+    },
+    {
+      "logical_record_number": 104675,
+      "reason": "expected 41 fields, found 42",
+      "source_line_start": 104677
+    }
+  ],
+  "source": {
+    "field_count": 41,
+    "filename": "part-00000-0dd5f001-57d7-4ec1-a3f0-53ea28bba9c3-c000.csv",
+    "sha256": "83ba4a0ae4e965e61ca44c4c3e444218d07cc8b8b3cec4a2029ab51b6a12c09c"
+  }
+}

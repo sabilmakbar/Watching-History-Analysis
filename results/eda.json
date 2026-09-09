@@ -1,0 +1,505 @@
+{
+  "audience_context": {
+    "has_ad": [
+      {
+        "completed_events": 590,
+        "completion_rate": 0.24905,
+        "eligible_events": 2369,
+        "events": 24700,
+        "value": false
+      },
+      {
+        "completed_events": 16225,
+        "completion_rate": 0.247691,
+        "eligible_events": 65505,
+        "events": 82111,
+        "value": true
+      }
+    ],
+    "is_login": [
+      {
+        "completed_events": 14519,
+        "completion_rate": 0.239964,
+        "eligible_events": 60505,
+        "events": 82253,
+        "value": false
+      },
+      {
+        "completed_events": 2296,
+        "completion_rate": 0.311576,
+        "eligible_events": 7369,
+        "events": 24558,
+        "value": true
+      }
+    ],
+    "is_premium": [
+      {
+        "completed_events": 16633,
+        "completion_rate": 0.246879,
+        "eligible_events": 67373,
+        "events": 105886,
+        "value": false
+      },
+      {
+        "completed_events": 182,
+        "completion_rate": 0.363273,
+        "eligible_events": 501,
+        "events": 925,
+        "value": true
+      }
+    ]
+  },
+  "completion": {
+    "by_category_name": [
+      {
+        "category_name": "Champions",
+        "completed_events": 12,
+        "completion_rate": 0.2,
+        "eligible_events": 60
+      },
+      {
+        "category_name": "Education",
+        "completed_events": 145,
+        "completion_rate": 0.350242,
+        "eligible_events": 414
+      },
+      {
+        "category_name": "Entertainment",
+        "completed_events": 4307,
+        "completion_rate": 0.197153,
+        "eligible_events": 21846
+      },
+      {
+        "category_name": "Funny",
+        "completed_events": 95,
+        "completion_rate": 0.201271,
+        "eligible_events": 472
+      },
+      {
+        "category_name": "Horror",
+        "completed_events": 4,
+        "completion_rate": 0.16,
+        "eligible_events": 25
+      },
+      {
+        "category_name": "Kids",
+        "completed_events": 28,
+        "completion_rate": 0.157303,
+        "eligible_events": 178
+      },
+      {
+        "category_name": "Korea",
+        "completed_events": 10,
+        "completion_rate": 0.070423,
+        "eligible_events": 142
+      },
+      {
+        "category_name": "Lifestyle",
+        "completed_events": 184,
+        "completion_rate": 0.135894,
+        "eligible_events": 1354
+      },
+      {
+        "category_name": "Movies",
+        "completed_events": 901,
+        "completion_rate": 0.155479,
+        "eligible_events": 5795
+      },
+      {
+        "category_name": "Music",
+        "completed_events": 309,
+        "completion_rate": 0.125508,
+        "eligible_events": 2462
+      },
+      {
+        "category_name": "News",
+        "completed_events": 7450,
+        "completion_rate": 0.350045,
+        "eligible_events": 21283
+      },
+      {
+        "category_name": "Sports",
+        "completed_events": 1841,
+        "completion_rate": 0.240371,
+        "eligible_events": 7659
+      },
+      {
+        "category_name": "TV Show",
+        "completed_events": 1175,
+        "completion_rate": 0.265417,
+        "eligible_events": 4427
+      },
+      {
+        "category_name": "Vlog",
+        "completed_events": 352,
+        "completion_rate": 0.203468,
+        "eligible_events": 1730
+      },
+      {
+        "category_name": "Webtoon",
+        "completed_events": 2,
+        "completion_rate": 0.074074,
+        "eligible_events": 27
+      }
+    ],
+    "by_content_type": [
+      {
+        "completed_events": 54,
+        "completion_rate": 0.142857,
+        "content_type": "catchup",
+        "eligible_events": 378
+      },
+      {
+        "completed_events": 16761,
+        "completion_rate": 0.248326,
+        "content_type": "vod",
+        "eligible_events": 67496
+      }
+    ],
+    "by_platform": [
+      {
+        "completed_events": 2516,
+        "completion_rate": 0.320918,
+        "eligible_events": 7840,
+        "platform": "app-android"
+      },
+      {
+        "completed_events": 114,
+        "completion_rate": 0.266355,
+        "eligible_events": 428,
+        "platform": "app-ios"
+      },
+      {
+        "completed_events": 59,
+        "completion_rate": 0.210714,
+        "eligible_events": 280,
+        "platform": "tv-android"
+      },
+      {
+        "completed_events": 20,
+        "completion_rate": 0.21978,
+        "eligible_events": 91,
+        "platform": "tv-tizen"
+      },
+      {
+        "completed_events": 0,
+        "completion_rate": 0.0,
+        "eligible_events": 1,
+        "platform": "tv-webos"
+      },
+      {
+        "completed_events": 1405,
+        "completion_rate": 0.252971,
+        "eligible_events": 5554,
+        "platform": "web-desktop"
+      },
+      {
+        "completed_events": 12701,
+        "completion_rate": 0.236606,
+        "eligible_events": 53680,
+        "platform": "web-mobile"
+      }
+    ],
+    "denominator": "non-missing completed values for vod and catchup only",
+    "eligible_events": 67874
+  },
+  "daily_volume": [
+    {
+      "date_utc": "2020-02-01",
+      "events": 979
+    },
+    {
+      "date_utc": "2020-02-02",
+      "events": 6377
+    },
+    {
+      "date_utc": "2020-02-03",
+      "events": 6891
+    },
+    {
+      "date_utc": "2020-02-04",
+      "events": 6792
+    },
+    {
+      "date_utc": "2020-02-05",
+      "events": 6601
+    },
+    {
+      "date_utc": "2020-02-06",
+      "events": 6971
+    },
+    {
+      "date_utc": "2020-02-07",
+      "events": 7071
+    },
+    {
+      "date_utc": "2020-02-08",
+      "events": 6450
+    },
+    {
+      "date_utc": "2020-02-09",
+      "events": 6594
+    },
+    {
+      "date_utc": "2020-02-10",
+      "events": 7772
+    },
+    {
+      "date_utc": "2020-02-11",
+      "events": 7720
+    },
+    {
+      "date_utc": "2020-02-12",
+      "events": 8473
+    },
+    {
+      "date_utc": "2020-02-13",
+      "events": 8073
+    },
+    {
+      "date_utc": "2020-02-14",
+      "events": 6074
+    },
+    {
+      "date_utc": "2020-02-15",
+      "events": 7812
+    },
+    {
+      "date_utc": "2020-02-16",
+      "events": 6161
+    }
+  ],
+  "hourly_volume": [
+    {
+      "events": 3561,
+      "hour_utc": 0
+    },
+    {
+      "events": 4204,
+      "hour_utc": 1
+    },
+    {
+      "events": 4596,
+      "hour_utc": 2
+    },
+    {
+      "events": 4695,
+      "hour_utc": 3
+    },
+    {
+      "events": 4876,
+      "hour_utc": 4
+    },
+    {
+      "events": 4928,
+      "hour_utc": 5
+    },
+    {
+      "events": 5093,
+      "hour_utc": 6
+    },
+    {
+      "events": 5142,
+      "hour_utc": 7
+    },
+    {
+      "events": 4993,
+      "hour_utc": 8
+    },
+    {
+      "events": 5247,
+      "hour_utc": 9
+    },
+    {
+      "events": 5670,
+      "hour_utc": 10
+    },
+    {
+      "events": 5945,
+      "hour_utc": 11
+    },
+    {
+      "events": 7267,
+      "hour_utc": 12
+    },
+    {
+      "events": 8166,
+      "hour_utc": 13
+    },
+    {
+      "events": 8195,
+      "hour_utc": 14
+    },
+    {
+      "events": 6533,
+      "hour_utc": 15
+    },
+    {
+      "events": 4648,
+      "hour_utc": 16
+    },
+    {
+      "events": 2692,
+      "hour_utc": 17
+    },
+    {
+      "events": 1633,
+      "hour_utc": 18
+    },
+    {
+      "events": 1114,
+      "hour_utc": 19
+    },
+    {
+      "events": 975,
+      "hour_utc": 20
+    },
+    {
+      "events": 1272,
+      "hour_utc": 21
+    },
+    {
+      "events": 2343,
+      "hour_utc": 22
+    },
+    {
+      "events": 3023,
+      "hour_utc": 23
+    }
+  ],
+  "platform_content_mix": [
+    {
+      "content_type": "catchup",
+      "events": 190,
+      "platform": "app-android"
+    },
+    {
+      "content_type": "livestreaming",
+      "events": 18115,
+      "platform": "app-android"
+    },
+    {
+      "content_type": "vod",
+      "events": 7650,
+      "platform": "app-android"
+    },
+    {
+      "content_type": "catchup",
+      "events": 22,
+      "platform": "app-ios"
+    },
+    {
+      "content_type": "livestreaming",
+      "events": 1353,
+      "platform": "app-ios"
+    },
+    {
+      "content_type": "vod",
+      "events": 406,
+      "platform": "app-ios"
+    },
+    {
+      "content_type": "livestreaming",
+      "events": 5650,
+      "platform": "tv-android"
+    },
+    {
+      "content_type": "vod",
+      "events": 280,
+      "platform": "tv-android"
+    },
+    {
+      "content_type": "livestreaming",
+      "events": 940,
+      "platform": "tv-tizen"
+    },
+    {
+      "content_type": "vod",
+      "events": 91,
+      "platform": "tv-tizen"
+    },
+    {
+      "content_type": "livestreaming",
+      "events": 152,
+      "platform": "tv-webos"
+    },
+    {
+      "content_type": "vod",
+      "events": 1,
+      "platform": "tv-webos"
+    },
+    {
+      "content_type": "catchup",
+      "events": 71,
+      "platform": "web-desktop"
+    },
+    {
+      "content_type": "livestreaming",
+      "events": 4679,
+      "platform": "web-desktop"
+    },
+    {
+      "content_type": "vod",
+      "events": 5483,
+      "platform": "web-desktop"
+    },
+    {
+      "content_type": "catchup",
+      "events": 95,
+      "platform": "web-mobile"
+    },
+    {
+      "content_type": "livestreaming",
+      "events": 8048,
+      "platform": "web-mobile"
+    },
+    {
+      "content_type": "vod",
+      "events": 53585,
+      "platform": "web-mobile"
+    }
+  ],
+  "playback_quality_percentiles": {
+    "average_bitrate": {
+      "missing": 4946,
+      "p01": 300.0,
+      "p25": 633.0,
+      "p50": 300000.0,
+      "p75": 300000.0,
+      "p95": 300000.0,
+      "p99": 300000.0,
+      "present": 101865
+    },
+    "buffer_duration": {
+      "missing": 0,
+      "p01": 0.0,
+      "p25": 0.0,
+      "p50": 1.0,
+      "p75": 6.0,
+      "p95": 1035.0,
+      "p99": 3590.8,
+      "present": 106811
+    },
+    "play_duration": {
+      "missing": 0,
+      "p01": 0.0,
+      "p25": 4.0,
+      "p50": 41.0,
+      "p75": 120.0,
+      "p95": 2494.0,
+      "p99": 6239.1,
+      "present": 106811
+    },
+    "total_bytes": {
+      "missing": 0,
+      "p01": 0.0,
+      "p25": 750.0,
+      "p50": 506250.0,
+      "p75": 11250000.0,
+      "p95": 292500000.0,
+      "p99": 1551374999.999934,
+      "present": 106811
+    }
+  },
+  "source_sha256": "83ba4a0ae4e965e61ca44c4c3e444218d07cc8b8b3cec4a2029ab51b6a12c09c"
+}

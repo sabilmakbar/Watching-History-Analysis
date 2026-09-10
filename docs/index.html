@@ -22,6 +22,13 @@
     .chart-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 470px), 1fr)); gap: 18px; }
     .chart-grid section { margin: 0; }
     .callout { border-left: 5px solid var(--accent); padding-left: 18px; }
+    .executive-copy { max-width: 850px; color: var(--muted); }
+    .executive-findings { display: grid; gap: 14px; padding-left: 28px; }
+    .executive-findings li { padding: 4px 4px 14px 10px; border-bottom: 1px solid var(--line); }
+    .executive-findings li:last-child { border-bottom: 0; }
+    .executive-findings li::marker { color: var(--accent); font-size: 1.2rem; font-weight: 800; }
+    .executive-findings strong { display: block; color: var(--ink); font-size: 1.05rem; }
+    .implication { color: var(--muted); }
     code { overflow-wrap: anywhere; }
     footer { padding: 28px 0 64px; color: var(--muted); }
     @media (max-width: 620px) { header { padding-top: 38px; } section { border-radius: 12px; } }
@@ -31,7 +38,7 @@
 <header>
   <p class="eyebrow">Interactive exploratory analysis</p>
   <h1>Watching History Analysis</h1>
-  <p class="lede">106,811 accepted playback events from 1–16 February 2020. Explore when viewing happened, what people watched, playback context, completion, and a compact leakage-controlled benchmark.</p>
+  <p class="lede">An executive view of when playback demand concentrates, where completion differs, and how much start-time context can predict later completion across 106,811 accepted events.</p>
   <div class="stats">
     <div class="stat"><strong>106,811</strong><span>accepted events</span></div>
     <div class="stat"><strong>12</strong><span>malformed records rejected</span></div>
@@ -40,6 +47,13 @@
   </div>
 </header>
 <main>
+  <section id="executive-summary">
+    <h2>Problem and decision context</h2>
+    <p class="executive-copy">The source repository held a large anonymized playback export but no analysis explaining where viewing demand concentrates, which contexts are associated with completion, or whether those patterns generalize to later events. This report turns the export into an auditable portfolio artifact and highlights where product or data-quality investigation would be most useful.</p>
+    <h3>Data and approach</h3>
+    <p class="executive-copy">The pipeline parsed 106,823 logical records, accepted 106,811 structurally valid events, and recorded 12 rejections without changing the source. Exploratory analysis covers time, platform, content, audience context, completion, and robust playback-quality percentiles. A leakage-controlled benchmark then compares a prior dummy with Logistic Regression on 67,874 labeled VOD and catch-up events using an 80/20 chronological holdout.</p>
+    <p class="callout">The export covers only 1–16 February 2020 in UTC, with partial first and last dates. Treat the results as evidence for investigation within this sample.</p>
+  </section>
   <section id="data-trust">
     <h2>Data trust</h2>
     <p>Every parsed logical record is accounted for. The build accepts rows with exactly 41 fields, rejects 12 malformed records with their logical and physical source positions, and verifies the source SHA-256 before analysis.</p>
@@ -74,13 +88,22 @@
     <p>Coefficients are signed observational associations conditional on the encoded inputs. They are not causal effects, and their scale is in model log-odds.</p>
     <div style="height:600px; width:100%;">                            <div id="model-coefficients-chart" class="plotly-graph-div" style="height:100%; width:100%;"></div>            <script>                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("model-coefficients-chart")) {                    Plotly.newPlot(                        "model-coefficients-chart",                        [{"hovertemplate":"%{y}\u003cbr\u003ecoefficient %{x:+.3f}\u003cextra\u003e\u003c\u002fextra\u003e","marker":{"color":["#CC79A7","#CC79A7","#CC79A7","#CC79A7","#CC79A7","#CC79A7","#CC79A7","#CC79A7","#009E73","#009E73","#009E73","#009E73","#009E73","#009E73","#009E73","#009E73"],"pattern":{"shape":["x","x","x","x","x","x","x","x","\u002f","\u002f","\u002f","\u002f","\u002f","\u002f","\u002f","\u002f"]}},"orientation":"h","text":["-0.79","-0.77","-0.74","-0.60","-0.57","-0.55","-0.54","-0.53","+0.38","+0.41","+0.44","+0.45","+0.55","+0.65","+0.66","+0.88"],"x":[-0.791527,-0.769628,-0.74197,-0.603907,-0.573349,-0.545043,-0.540571,-0.531317,0.384206,0.413541,0.438189,0.45252,0.552423,0.650851,0.657848,0.884424],"y":["content_type_catchup","browser_name_UC Browser","referrer_group_fimela","category_name_Korea","category_name_Movies","category_name_Music","referrer_group_google","is_premium_False","os_name_infrequent_sklearn","category_name_Vlog","content_type_vod","category_name_Education","browser_name_LINE","category_name_Sports","category_name_News","referrer_group_merdeka"],"type":"bar"}],                        {"template":{},"title":{"text":"Strongest signed Logistic Regression coefficients"},"xaxis":{"title":{"text":"Log-odds coefficient"},"gridcolor":"#dfe3e8","zeroline":false},"yaxis":{"title":{"text":"Encoded start-time feature"},"gridcolor":"#dfe3e8","zeroline":false},"margin":{"l":60,"r":24,"t":72,"b":58},"font":{"family":"Inter, system-ui, sans-serif","color":"#18212b"},"hoverlabel":{"bgcolor":"white"},"legend":{"orientation":"h","y":1.12,"x":0},"height":600,"paper_bgcolor":"white","plot_bgcolor":"#f7f8fa"},                        {"responsive": true, "displaylogo": false}                    )                };            </script>        </div>
   </section>
+  <section id="findings">
+    <h2>What we found</h2>
+    <ol class="executive-findings">
+      <li><strong>Playback is concentrated on two mobile surfaces.</strong> Web mobile contributes 57.8% of all events; together with the Android app it contributes 82.1%. <span class="implication">Experience and reliability work on these two surfaces reaches most events in this export, though event share is not the same as unique-user share.</span></li>
+      <li><strong>Demand peaks around 13:00–14:00 UTC.</strong> The 13:00 and 14:00 hours contain 8,166 and 8,195 events respectively. The first and last dates are partial windows, so their lower daily totals should not be read as demand drops. <span class="implication">Operational monitoring can focus on the midday UTC peak, while date-to-date comparisons should exclude or annotate the boundary days.</span></li>
+      <li><strong>Android-app completion is 8.4 percentage points higher than mobile web.</strong> The Android app completes at 32.1% across 7,840 eligible events versus 23.7% across 53,680 on mobile web. <span class="implication">The gap is large enough to justify a journey-level comparison, but this export cannot identify whether platform, audience, or content mix explains it.</span></li>
+      <li><strong>Login status separates completion; ad presence does not.</strong> Logged-in events complete at 31.2% versus 24.0% for logged-out events, while ad-present and ad-absent rates are effectively flat at 24.8% and 24.9%. <span class="implication">Login is useful for segmentation and diagnosis here; the ad flag provides no comparable event-level completion signal.</span></li>
+      <li><strong>Content category is a major context for completion.</strong> News completes at 35.0% on 21,283 eligible events versus 19.7% on 21,846 for Entertainment. <span class="implication">Platform comparisons should control for content mix before they drive product conclusions.</span></li>
+      <li><strong>Start-time context adds useful, limited predictive signal.</strong> Logistic Regression raises chronological holdout PR-AUC from 0.218 to 0.365 and improves Brier score from 0.172 to 0.158. <span class="implication">The model is a credible benchmark for ranking and probability quality, not evidence that it is ready for operational decisions.</span></li>
+      <li><strong>Playback-quality fields need a data dictionary before operational use.</strong> Average bitrate is fixed at 300,000 from the median through the 99th percentile, while buffer duration jumps from a median of 1 to 1,035 at p95. <span class="implication">The apparent bitrate ceiling and large buffer tail may reflect source units, defaults, or capping and should be resolved upstream before thresholds are set.</span></li>
+    </ol>
+    <p class="callout">These are event-level associations from a short export, not causal or user-level effects.</p>
+  </section>
   <section id="method">
     <h2>Method</h2>
     <p>The build validates the source, parses timestamps in UTC, coerces numeric and boolean fields, and creates aggregate results without writing event-level cleaned data. The completion model uses only playback-start context, an 80/20 chronological split, most-frequent categorical imputation, one-hot encoding with rare levels grouped below 20 observations, and Logistic Regression with a prior-probability dummy baseline.</p>
-  </section>
-  <section id="findings">
-    <h2>Findings</h2>
-    <p>Viewing volume varies across both date and UTC hour. Completion differs across platform, content category, and audience context, while the chronological benchmark shows useful but limited discrimination over the class-prior baseline.</p>
   </section>
   <section id="caveats">
     <h2>Caveats</h2>

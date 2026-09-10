@@ -711,6 +711,37 @@ def build_report(eda: dict[str, Any], model: dict[str, Any]) -> str:
     logistic = model["models"]["logistic_regression"]
     dummy_metrics = model["models"]["dummy_prior"]
     split = model["split"]
+    total_events = sum(platform_events)
+    platform_totals = dict(zip(platforms, platform_events, strict=True))
+    hourly_totals = {row["hour_utc"]: row["events"] for row in hourly}
+    completion_platforms = {
+        row["platform"]: row for row in eda["completion"]["by_platform"]
+    }
+    completion_categories = {
+        row["category_name"]: row
+        for row in eda["completion"]["by_category_name"]
+    }
+    audience = {
+        column: {row["value"]: row for row in rows}
+        for column, rows in eda["audience_context"].items()
+    }
+    web_mobile_share = platform_totals["web-mobile"] / total_events
+    mobile_share = (
+        platform_totals["web-mobile"] + platform_totals["app-android"]
+    ) / total_events
+    android_completion = completion_platforms["app-android"]
+    web_completion = completion_platforms["web-mobile"]
+    platform_completion_gap = (
+        android_completion["completion_rate"] - web_completion["completion_rate"]
+    ) * 100
+    news_completion = completion_categories["News"]
+    entertainment_completion = completion_categories["Entertainment"]
+    logged_in = audience["is_login"][True]
+    logged_out = audience["is_login"][False]
+    ad_present = audience["has_ad"][True]
+    ad_absent = audience["has_ad"][False]
+    average_bitrate = quality["average_bitrate"]
+    buffer_duration = quality["buffer_duration"]
 
     return f"""<!doctype html>
 <html lang="en">
@@ -736,6 +767,13 @@ def build_report(eda: dict[str, Any], model: dict[str, Any]) -> str:
     .chart-grid {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 470px), 1fr)); gap: 18px; }}
     .chart-grid section {{ margin: 0; }}
     .callout {{ border-left: 5px solid var(--accent); padding-left: 18px; }}
+    .executive-copy {{ max-width: 850px; color: var(--muted); }}
+    .executive-findings {{ display: grid; gap: 14px; padding-left: 28px; }}
+    .executive-findings li {{ padding: 4px 4px 14px 10px; border-bottom: 1px solid var(--line); }}
+    .executive-findings li:last-child {{ border-bottom: 0; }}
+    .executive-findings li::marker {{ color: var(--accent); font-size: 1.2rem; font-weight: 800; }}
+    .executive-findings strong {{ display: block; color: var(--ink); font-size: 1.05rem; }}
+    .implication {{ color: var(--muted); }}
     code {{ overflow-wrap: anywhere; }}
     footer {{ padding: 28px 0 64px; color: var(--muted); }}
     @media (max-width: 620px) {{ header {{ padding-top: 38px; }} section {{ border-radius: 12px; }} }}
@@ -745,7 +783,7 @@ def build_report(eda: dict[str, Any], model: dict[str, Any]) -> str:
 <header>
   <p class="eyebrow">Interactive exploratory analysis</p>
   <h1>{REPORT_TITLE}</h1>
-  <p class="lede">106,811 accepted playback events from 1–16 February 2020. Explore when viewing happened, what people watched, playback context, completion, and a compact leakage-controlled benchmark.</p>
+  <p class="lede">An executive view of when playback demand concentrates, where completion differs, and how much start-time context can predict later completion across 106,811 accepted events.</p>
   <div class="stats">
     <div class="stat"><strong>106,811</strong><span>accepted events</span></div>
     <div class="stat"><strong>12</strong><span>malformed records rejected</span></div>
@@ -754,6 +792,13 @@ def build_report(eda: dict[str, Any], model: dict[str, Any]) -> str:
   </div>
 </header>
 <main>
+  <section id="executive-summary">
+    <h2>Problem and decision context</h2>
+    <p class="executive-copy">The source repository held a large anonymized playback export but no analysis explaining where viewing demand concentrates, which contexts are associated with completion, or whether those patterns generalize to later events. This report turns the export into an auditable portfolio artifact and highlights where product or data-quality investigation would be most useful.</p>
+    <h3>Data and approach</h3>
+    <p class="executive-copy">The pipeline parsed 106,823 logical records, accepted 106,811 structurally valid events, and recorded 12 rejections without changing the source. Exploratory analysis covers time, platform, content, audience context, completion, and robust playback-quality percentiles. A leakage-controlled benchmark then compares a prior dummy with Logistic Regression on 67,874 labeled VOD and catch-up events using an 80/20 chronological holdout.</p>
+    <p class="callout">The export covers only 1–16 February 2020 in UTC, with partial first and last dates. Treat the results as evidence for investigation within this sample.</p>
+  </section>
   <section id="data-trust">
     <h2>Data trust</h2>
     <p>Every parsed logical record is accounted for. The build accepts rows with exactly 41 fields, rejects 12 malformed records with their logical and physical source positions, and verifies the source SHA-256 before analysis.</p>
@@ -788,13 +833,22 @@ def build_report(eda: dict[str, Any], model: dict[str, Any]) -> str:
     <p>Coefficients are signed observational associations conditional on the encoded inputs. They are not causal effects, and their scale is in model log-odds.</p>
     {figures['coefficients']}
   </section>
+  <section id="findings">
+    <h2>What we found</h2>
+    <ol class="executive-findings">
+      <li><strong>Playback is concentrated on two mobile surfaces.</strong> Web mobile contributes {web_mobile_share:.1%} of all events; together with the Android app it contributes {mobile_share:.1%}. <span class="implication">Experience and reliability work on these two surfaces reaches most events in this export, though event share is not the same as unique-user share.</span></li>
+      <li><strong>Demand peaks around 13:00–14:00 UTC.</strong> The 13:00 and 14:00 hours contain {hourly_totals[13]:,} and {hourly_totals[14]:,} events respectively. The first and last dates are partial windows, so their lower daily totals should not be read as demand drops. <span class="implication">Operational monitoring can focus on the midday UTC peak, while date-to-date comparisons should exclude or annotate the boundary days.</span></li>
+      <li><strong>Android-app completion is {platform_completion_gap:.1f} percentage points higher than mobile web.</strong> The Android app completes at {android_completion['completion_rate']:.1%} across {android_completion['eligible_events']:,} eligible events versus {web_completion['completion_rate']:.1%} across {web_completion['eligible_events']:,} on mobile web. <span class="implication">The gap is large enough to justify a journey-level comparison, but this export cannot identify whether platform, audience, or content mix explains it.</span></li>
+      <li><strong>Login status separates completion; ad presence does not.</strong> Logged-in events complete at {logged_in['completion_rate']:.1%} versus {logged_out['completion_rate']:.1%} for logged-out events, while ad-present and ad-absent rates are effectively flat at {ad_present['completion_rate']:.1%} and {ad_absent['completion_rate']:.1%}. <span class="implication">Login is useful for segmentation and diagnosis here; the ad flag provides no comparable event-level completion signal.</span></li>
+      <li><strong>Content category is a major context for completion.</strong> News completes at {news_completion['completion_rate']:.1%} on {news_completion['eligible_events']:,} eligible events versus {entertainment_completion['completion_rate']:.1%} on {entertainment_completion['eligible_events']:,} for Entertainment. <span class="implication">Platform comparisons should control for content mix before they drive product conclusions.</span></li>
+      <li><strong>Start-time context adds useful, limited predictive signal.</strong> Logistic Regression raises chronological holdout PR-AUC from {dummy_metrics['pr_auc']:.3f} to {logistic['pr_auc']:.3f} and improves Brier score from {dummy_metrics['brier_score']:.3f} to {logistic['brier_score']:.3f}. <span class="implication">The model is a credible benchmark for ranking and probability quality, not evidence that it is ready for operational decisions.</span></li>
+      <li><strong>Playback-quality fields need a data dictionary before operational use.</strong> Average bitrate is fixed at {average_bitrate['p50']:,.0f} from the median through the 99th percentile, while buffer duration jumps from a median of {buffer_duration['p50']:,.0f} to {buffer_duration['p95']:,.0f} at p95. <span class="implication">The apparent bitrate ceiling and large buffer tail may reflect source units, defaults, or capping and should be resolved upstream before thresholds are set.</span></li>
+    </ol>
+    <p class="callout">These are event-level associations from a short export, not causal or user-level effects.</p>
+  </section>
   <section id="method">
     <h2>Method</h2>
     <p>The build validates the source, parses timestamps in UTC, coerces numeric and boolean fields, and creates aggregate results without writing event-level cleaned data. The completion model uses only playback-start context, an 80/20 chronological split, most-frequent categorical imputation, one-hot encoding with rare levels grouped below 20 observations, and Logistic Regression with a prior-probability dummy baseline.</p>
-  </section>
-  <section id="findings">
-    <h2>Findings</h2>
-    <p>Viewing volume varies across both date and UTC hour. Completion differs across platform, content category, and audience context, while the chronological benchmark shows useful but limited discrimination over the class-prior baseline.</p>
   </section>
   <section id="caveats">
     <h2>Caveats</h2>

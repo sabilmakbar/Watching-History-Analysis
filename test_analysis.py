@@ -172,7 +172,7 @@ def main() -> None:
 
     report = (ROOT / "docs" / "index.html").read_text(encoding="utf-8")
     figure_count = report.count("Plotly.newPlot(")
-    assert figure_count >= 7
+    assert figure_count == 10
     assert report.count('"responsive": true') == figure_count
     assert PLOTLY_CDN == "https://cdn.plot.ly/plotly-4.0.0.min.js"
     assert re.findall(r'<script[^>]+src="([^"]+)"', report) == [PLOTLY_CDN]
@@ -180,11 +180,40 @@ def main() -> None:
     assert '<meta name="viewport" content="width=device-width, initial-scale=1">' in report
     assert f"<h1>{REPORT_TITLE}</h1>" in report
     assert_report_order(report)
+    executive_position = report.index('<section id="executive-summary">')
+    first_eda_position = report.index('<section id="daily-volume">')
     model_position = report.index('<section id="model">')
-    assert all(
-        report.index(f'<section id="{section}">') > model_position
-        for section in ("method", "findings", "caveats")
-    )
+    findings_position = report.index('<section id="findings">')
+    method_position = report.index('<section id="method">')
+    caveats_position = report.index('<section id="caveats">')
+    assert executive_position < first_eda_position
+    assert model_position < findings_position < method_position < caveats_position
+    assert "<h2>Problem and decision context</h2>" in report
+    assert "<h3>Data and approach</h3>" in report
+    assert "<h2>What we found</h2>" in report
+    assert '<ol class="executive-findings">' in report
+    findings = report[findings_position:method_position]
+    assert findings.count("<li>") == 7
+    for evidence in (
+        "57.8%",
+        "82.1%",
+        "13:00–14:00 UTC",
+        "32.1%",
+        "23.7%",
+        "31.2%",
+        "24.0%",
+        "35.0%",
+        "21,283",
+        "19.7%",
+        "21,846",
+        "0.218",
+        "0.365",
+        "0.172",
+        "0.158",
+        "300,000",
+        "1,035",
+    ):
+        assert evidence in findings
     report_lower = report.lower()
     for phrase in (
         "denominator",
@@ -193,6 +222,8 @@ def main() -> None:
         "observational associations",
         "provenance remains limited",
         "without a local server",
+        "event-level associations from a short export",
+        "not causal or user-level effects",
     ):
         assert phrase in report_lower
     broken_order = '<section id="model"></section>' + "".join(
@@ -215,6 +246,9 @@ def main() -> None:
         assert f"## {heading}" in readme
     assert "https://sabilmakbar.github.io/Watching-History-Analysis/" in readme
     assert "upstream publisher and license" in readme.lower()
+    for evidence in ("57.8%", "82.1%", "32.1%", "23.7%", "0.218", "0.365"):
+        assert evidence in readme
+    assert "event-level associations from a short export" in readme
 
     print("analysis checks passed")
 

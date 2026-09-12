@@ -15,9 +15,9 @@
 | source SHA-256 | `shasum -a 256 part-00000-0dd5f001-57d7-4ec1-a3f0-53ea28bba9c3-c000.csv` | `83ba4a0ae4e965e61ca44c4c3e444218d07cc8b8b3cec4a2029ab51b6a12c09c` | 2026-09-10 |
 | parsed / accepted / rejected events | `uv run python scripts/build_analysis.py --summary` | 106823 / 106811 / 12 (direct probe) | 2026-09-10 |
 | event time span | `uv run python scripts/build_analysis.py --summary` | 2020-02-01 through 2020-02-16 UTC (direct probe) | 2026-09-10 |
-| repeat-history coverage | `uv run python scripts/build_analysis.py --summary` | 102985 accepted-row watchers; median 1 event; 45 with at least 5 events (direct probe) | 2026-09-10 |
-| chronological model probe | `uv run python scripts/build_analysis.py --summary` | LogReg ROC-AUC 0.689, PR-AUC 0.365; dummy PR-AUC 0.218 (without `has_ad`) | 2026-09-10 |
-| accepted-row numeric missingness | `uv run python scripts/build_analysis.py --summary` | `average_bitrate`: 4946 missing; all present modeled numeric values parse | 2026-09-10 |
+| repeat-history coverage | `uv run python -c 'from pathlib import Path; from watch_history.analysis import load_events; f,_=load_events(Path("part-00000-0dd5f001-57d7-4ec1-a3f0-53ea28bba9c3-c000.csv")); c=f["hash_watcher_id"].value_counts(); print(len(c), c.median(), c.ge(5).sum())'` | 102985 accepted-row watchers; median 1 event; 45 with at least 5 events | 2026-09-12 |
+| chronological model probe | `uv run python -c 'import json; print(json.load(open("results/model_metrics.json"))["models"])'` | LogReg ROC-AUC 0.690, PR-AUC 0.365, Brier 0.158; dummy PR-AUC 0.218 | 2026-09-12 |
+| accepted-row numeric missingness | `uv run python -c 'import json; print(json.load(open("results/data_quality.json"))["coercion"]["numeric"])'` | `average_bitrate`: 4946 missing; all present modeled numeric values parse | 2026-09-12 |
 
 ## Problem & intent
 

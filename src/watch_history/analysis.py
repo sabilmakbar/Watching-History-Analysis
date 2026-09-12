@@ -707,13 +707,13 @@ def build_report(eda: dict[str, Any], model: dict[str, Any]) -> str:
     )
 
     busiest_day = max(daily, key=lambda row: row["events"])
-    busiest_hour = max(hourly, key=lambda row: row["events"])
     logistic = model["models"]["logistic_regression"]
     dummy_metrics = model["models"]["dummy_prior"]
     split = model["split"]
     total_events = sum(platform_events)
     platform_totals = dict(zip(platforms, platform_events, strict=True))
     hourly_totals = {row["hour_utc"]: row["events"] for row in hourly}
+    content_totals = dict(zip(content_types, content_events, strict=True))
     completion_platforms = {
         row["platform"]: row for row in eda["completion"]["by_platform"]
     }
@@ -729,11 +729,10 @@ def build_report(eda: dict[str, Any], model: dict[str, Any]) -> str:
     mobile_share = (
         platform_totals["web-mobile"] + platform_totals["app-android"]
     ) / total_events
+    vod_share = content_totals["vod"] / total_events
+    livestream_share = content_totals["livestreaming"] / total_events
     android_completion = completion_platforms["app-android"]
     web_completion = completion_platforms["web-mobile"]
-    platform_completion_gap = (
-        android_completion["completion_rate"] - web_completion["completion_rate"]
-    ) * 100
     news_completion = completion_categories["News"]
     entertainment_completion = completion_categories["Entertainment"]
     logged_in = audience["is_login"][True]
@@ -761,11 +760,15 @@ def build_report(eda: dict[str, Any], model: dict[str, Any]) -> str:
     .eyebrow {{ color: var(--accent); font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }}
     .lede {{ max-width: 760px; color: var(--muted); font-size: 1.15rem; }}
     .stats {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 28px; }}
-    .stat, section {{ background: var(--panel); border: 1px solid var(--line); border-radius: 18px; box-shadow: 0 8px 28px rgba(24,33,43,.05); }}
+    .stat, section, .topic-story {{ background: var(--panel); border: 1px solid var(--line); border-radius: 18px; box-shadow: 0 8px 28px rgba(24,33,43,.05); }}
     .stat {{ padding: 18px; }} .stat strong {{ display: block; font-size: 1.7rem; }} .stat span, .note {{ color: var(--muted); }}
-    section {{ margin: 18px 0; padding: clamp(20px, 4vw, 38px); }}
+    section, .topic-story {{ margin: 18px 0; padding: clamp(20px, 4vw, 38px); }}
     .chart-grid {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 470px), 1fr)); gap: 18px; }}
     .chart-grid section {{ margin: 0; }}
+    .topic-story > section, .topic-story .chart-grid section {{ margin: 0; padding: 0; border: 0; border-radius: 0; box-shadow: none; background: transparent; }}
+    .topic-question {{ border-left: 5px solid var(--accent); padding-left: 18px; font-size: 1.05rem; }}
+    .topic-evidence {{ margin-top: 22px; }}
+    .topic-implication {{ color: var(--muted); }}
     .callout {{ border-left: 5px solid var(--accent); padding-left: 18px; }}
     .executive-copy {{ max-width: 850px; color: var(--muted); }}
     .executive-findings {{ display: grid; gap: 14px; padding-left: 28px; }}
@@ -773,10 +776,9 @@ def build_report(eda: dict[str, Any], model: dict[str, Any]) -> str:
     .executive-findings li:last-child {{ border-bottom: 0; }}
     .executive-findings li::marker {{ color: var(--accent); font-size: 1.2rem; font-weight: 800; }}
     .executive-findings strong {{ display: block; color: var(--ink); font-size: 1.05rem; }}
-    .implication {{ color: var(--muted); }}
     code {{ overflow-wrap: anywhere; }}
     footer {{ padding: 28px 0 64px; color: var(--muted); }}
-    @media (max-width: 620px) {{ header {{ padding-top: 38px; }} section {{ border-radius: 12px; }} }}
+    @media (max-width: 620px) {{ header {{ padding-top: 38px; }} section, .topic-story {{ border-radius: 12px; }} }}
   </style>
 </head>
 <body>
@@ -804,45 +806,74 @@ def build_report(eda: dict[str, Any], model: dict[str, Any]) -> str:
     <p>Every parsed logical record is accounted for. The build accepts rows with exactly 41 fields, rejects 12 malformed records with their logical and physical source positions, and verifies the source SHA-256 before analysis.</p>
     <p class="note">All times are UTC. The original repository does not record the upstream publisher or license, so this repository is the available source and provenance remains limited.</p>
   </section>
-  <div class="chart-grid">
-    <section id="daily-volume"><h2>Daily volume</h2><p>Volume peaks on {busiest_day['date_utc']} at {busiest_day['events']:,} events.</p>{figures['daily']}</section>
-    <section id="hourly-volume"><h2>Hourly volume</h2><p>The busiest hour begins at {busiest_hour['hour_utc']:02d}:00 UTC with {busiest_hour['events']:,} events.</p>{figures['hourly']}</section>
-    <section id="platform-mix"><h2>Platform mix</h2><p>Hover to compare the devices through which playback began.</p>{figures['platform']}</section>
-    <section id="content-mix"><h2>Content mix</h2><p>Livestream events appear here but are excluded from completion rates because their labels are missing.</p>{figures['content']}</section>
-  </div>
-  <section id="completion-rates">
-    <h2>Completion rates</h2>
-    <p class="callout">Denominator: only VOD and catch-up events with a defined <code>completed</code> label. Every hover label reports or corresponds to its eligible event count.</p>
-    <div class="chart-grid"><div>{figures['completion_platform']}</div><div>{figures['completion_category']}</div></div>
-  </section>
-  <section id="audience-context">
-    <h2>Audience context</h2>
-    <p>Login, premium, and ad flags describe observed playback context. Differences are observational associations and do not establish causes.</p>
-    {figures['audience']}
-  </section>
-  <section id="playback-quality">
-    <h2>Playback quality</h2>
-    <p>Robust outlier treatment uses the 1st through 99th percentiles so extreme raw tails do not hide the main distribution. Values retain the source data's units; 4,946 average-bitrate values are missing.</p>
-    {figures['quality']}
-  </section>
-  <section id="model">
-    <h2>Model evidence</h2>
-    <p>The benchmark uses {split['train_rows']:,} earlier eligible events for training and {split['test_rows']:,} later events for testing. The test period starts {split['test_start_utc']}; equal timestamps are ordered by retained logical record number.</p>
-    <p>Logistic Regression reaches ROC-AUC {logistic['roc_auc']:.3f} and PR-AUC {logistic['pr_auc']:.3f}, compared with dummy PR-AUC {dummy_metrics['pr_auc']:.3f}. Brier score measures probability error and is better when lower.</p>
-    {figures['metrics']}
-    <p>Coefficients are signed observational associations conditional on the encoded inputs. They are not causal effects, and their scale is in model log-odds.</p>
-    {figures['coefficients']}
-  </section>
+  <article id="viewing-time-story" class="topic-story">
+    <h2>Viewing time</h2>
+    <p class="topic-question"><strong>Question:</strong> When does playback demand concentrate by UTC date and hour? <code>play_time</code> supports event-volume timing, but it cannot recover each viewer's local time.</p>
+    <div class="chart-grid">
+      <section id="daily-volume"><h3>Daily volume</h3>{figures['daily']}</section>
+      <section id="hourly-volume"><h3>Hourly volume</h3>{figures['hourly']}</section>
+    </div>
+    <p class="topic-evidence"><strong>Evidence:</strong> Daily volume reaches {busiest_day['events']:,} events on {busiest_day['date_utc']}. The 13:00 and 14:00 UTC hours are the busiest pair at {hourly_totals[13]:,} and {hourly_totals[14]:,} events, while the first and last dates cover only partial windows.</p>
+    <p class="topic-implication"><strong>Next question:</strong> Is the midday UTC peak stable across complete weeks and viewer time zones? Operational monitoring can start with this window, but the 16-day export is too short for seasonality or boundary-day comparisons.</p>
+  </article>
+  <article id="platform-content-story" class="topic-story">
+    <h2>Platform and content mix</h2>
+    <p class="topic-question"><strong>Question:</strong> Where does playback start, and which content types create that volume? Platform and content fields support event mix; they do not measure unique-user reach.</p>
+    <div class="chart-grid">
+      <section id="platform-mix"><h3>Platform mix</h3>{figures['platform']}</section>
+      <section id="content-mix"><h3>Content mix</h3>{figures['content']}</section>
+    </div>
+    <p class="topic-evidence"><strong>Evidence:</strong> Web mobile supplies {web_mobile_share:.1%} of events and reaches {mobile_share:.1%} when combined with the Android app. VOD contributes {vod_share:.1%}, while livestreaming contributes {livestream_share:.1%}; catch-up is the small remainder.</p>
+    <p class="topic-implication"><strong>Next question:</strong> Do mobile surfaces dominate because of audience preference, content availability, or measurement coverage? Prioritize their reliability for this sample, while keeping event share separate from viewer share.</p>
+  </article>
+  <article id="completion-story" class="topic-story">
+    <section id="completion-rates">
+      <h2>Completion</h2>
+      <p class="topic-question"><strong>Question:</strong> Among events with a usable outcome, where does completion differ by platform and content category? The source supports this only for labeled VOD and catch-up events.</p>
+      <p class="callout">Denominator: only VOD and catch-up events with a defined <code>completed</code> label. Every hover label reports or corresponds to its eligible event count.</p>
+      <div class="chart-grid"><div>{figures['completion_platform']}</div><div>{figures['completion_category']}</div></div>
+      <p class="topic-evidence"><strong>Evidence:</strong> Android-app completion is {android_completion['completion_rate']:.1%} across {android_completion['eligible_events']:,} eligible events versus {web_completion['completion_rate']:.1%} across {web_completion['eligible_events']:,} on mobile web. News reaches {news_completion['completion_rate']:.1%} on {news_completion['eligible_events']:,} events, compared with {entertainment_completion['completion_rate']:.1%} on {entertainment_completion['eligible_events']:,} for Entertainment.</p>
+      <p class="topic-implication"><strong>Next question:</strong> Does the platform gap remain after matching content and audience context? These observational associations identify where to investigate, not which platform or category causes completion.</p>
+    </section>
+  </article>
+  <article id="audience-story" class="topic-story">
+    <section id="audience-context">
+      <h2>Audience context</h2>
+      <p class="topic-question"><strong>Question:</strong> Do login, premium, and ad flags coincide with different completion rates? They describe event context, not stable user histories or treatment assignment.</p>
+      {figures['audience']}
+      <p class="topic-evidence"><strong>Evidence:</strong> Logged-in events complete at {logged_in['completion_rate']:.1%} versus {logged_out['completion_rate']:.1%} when logged out. Ad-present and ad-absent rates are nearly identical at {ad_present['completion_rate']:.1%} and {ad_absent['completion_rate']:.1%}; the higher premium rate rests on only 501 eligible events.</p>
+      <p class="topic-implication"><strong>Next question:</strong> Which content and platform combinations explain the login gap? Use premium cautiously because of its small denominator, and do not read any flag difference as a causal effect.</p>
+    </section>
+  </article>
+  <article id="quality-story" class="topic-story">
+    <section id="playback-quality">
+      <h2>Playback quality</h2>
+      <p class="topic-question"><strong>Question:</strong> Do the playback fields contain viewing-experience signal, and are the fields themselves usable? Robust outlier treatment shows the 1st through 99th percentiles because raw tails otherwise hide both questions.</p>
+      {figures['quality']}
+      <p class="topic-evidence"><strong>Evidence:</strong> Average bitrate is fixed at {average_bitrate['p50']:,.0f} from the median through p99, while buffer duration rises from {buffer_duration['p50']:,.0f} at the median to {buffer_duration['p95']:,.0f} at p95 and {buffer_duration['p99']:,.1f} at p99. Another 4,946 bitrate values are missing.</p>
+      <p class="topic-implication"><strong>Next question:</strong> Does 300,000 represent a cap, default, or source unit, and what unit governs buffer duration? Resolve the data dictionary and capping behavior before treating these distributions as operational experience thresholds.</p>
+    </section>
+  </article>
+  <article id="model-story" class="topic-story">
+    <section id="model">
+      <h2>Model evidence</h2>
+      <p class="topic-question"><strong>Question:</strong> Can information available when playback starts predict later completion better than the class prior, without using outcome-derived fields?</p>
+      <p class="note">The benchmark trains on {split['train_rows']:,} earlier eligible events and tests on {split['test_rows']:,} later events. The holdout begins {split['test_start_utc']}; equal timestamps use retained logical record number for deterministic ordering.</p>
+      {figures['metrics']}
+      {figures['coefficients']}
+      <p class="topic-evidence"><strong>Evidence:</strong> Logistic Regression improves PR-AUC from {dummy_metrics['pr_auc']:.3f} to {logistic['pr_auc']:.3f}, Brier score from {dummy_metrics['brier_score']:.3f} to {logistic['brier_score']:.3f}, and reaches ROC-AUC {logistic['roc_auc']:.3f}. Its strongest coefficients are signed associations conditional on the encoded inputs and use model log-odds, not causal effects.</p>
+      <p class="topic-implication"><strong>Next question:</strong> Do these gains persist on a longer, newer holdout with stable field definitions? The current model is a credible benchmark for discrimination and probability quality, not an operational decision system.</p>
+    </section>
+  </article>
   <section id="findings">
     <h2>What we found</h2>
     <ol class="executive-findings">
-      <li><strong>Playback is concentrated on two mobile surfaces.</strong> Web mobile contributes {web_mobile_share:.1%} of all events; together with the Android app it contributes {mobile_share:.1%}. <span class="implication">Experience and reliability work on these two surfaces reaches most events in this export, though event share is not the same as unique-user share.</span></li>
-      <li><strong>Demand peaks around 13:00–14:00 UTC.</strong> The 13:00 and 14:00 hours contain {hourly_totals[13]:,} and {hourly_totals[14]:,} events respectively. The first and last dates are partial windows, so their lower daily totals should not be read as demand drops. <span class="implication">Operational monitoring can focus on the midday UTC peak, while date-to-date comparisons should exclude or annotate the boundary days.</span></li>
-      <li><strong>Android-app completion is {platform_completion_gap:.1f} percentage points higher than mobile web.</strong> The Android app completes at {android_completion['completion_rate']:.1%} across {android_completion['eligible_events']:,} eligible events versus {web_completion['completion_rate']:.1%} across {web_completion['eligible_events']:,} on mobile web. <span class="implication">The gap is large enough to justify a journey-level comparison, but this export cannot identify whether platform, audience, or content mix explains it.</span></li>
-      <li><strong>Login status separates completion; ad presence does not.</strong> Logged-in events complete at {logged_in['completion_rate']:.1%} versus {logged_out['completion_rate']:.1%} for logged-out events, while ad-present and ad-absent rates are effectively flat at {ad_present['completion_rate']:.1%} and {ad_absent['completion_rate']:.1%}. <span class="implication">Login is useful for segmentation and diagnosis here; the ad flag provides no comparable event-level completion signal.</span></li>
-      <li><strong>Content category is a major context for completion.</strong> News completes at {news_completion['completion_rate']:.1%} on {news_completion['eligible_events']:,} eligible events versus {entertainment_completion['completion_rate']:.1%} on {entertainment_completion['eligible_events']:,} for Entertainment. <span class="implication">Platform comparisons should control for content mix before they drive product conclusions.</span></li>
-      <li><strong>Start-time context adds useful, limited predictive signal.</strong> Logistic Regression raises chronological holdout PR-AUC from {dummy_metrics['pr_auc']:.3f} to {logistic['pr_auc']:.3f} and improves Brier score from {dummy_metrics['brier_score']:.3f} to {logistic['brier_score']:.3f}. <span class="implication">The model is a credible benchmark for ranking and probability quality, not evidence that it is ready for operational decisions.</span></li>
-      <li><strong>Playback-quality fields need a data dictionary before operational use.</strong> Average bitrate is fixed at {average_bitrate['p50']:,.0f} from the median through the 99th percentile, while buffer duration jumps from a median of {buffer_duration['p50']:,.0f} to {buffer_duration['p95']:,.0f} at p95. <span class="implication">The apparent bitrate ceiling and large buffer tail may reflect source units, defaults, or capping and should be resolved upstream before thresholds are set.</span></li>
+      <li><strong>Most playback is mobile.</strong> Web mobile is {web_mobile_share:.1%} of events and reaches {mobile_share:.1%} with the Android app.</li>
+      <li><strong>The clearest demand window is 13:00–14:00 UTC.</strong> Treat the first and last dates as partial coverage.</li>
+      <li><strong>Completion varies materially by context.</strong> Android app versus mobile web is {android_completion['completion_rate']:.1%} versus {web_completion['completion_rate']:.1%}; logged in versus out is {logged_in['completion_rate']:.1%} versus {logged_out['completion_rate']:.1%}.</li>
+      <li><strong>Content mix matters.</strong> News is {news_completion['completion_rate']:.1%} on {news_completion['eligible_events']:,} eligible events versus Entertainment at {entertainment_completion['completion_rate']:.1%} on {entertainment_completion['eligible_events']:,}.</li>
+      <li><strong>The benchmark adds signal.</strong> PR-AUC moves from {dummy_metrics['pr_auc']:.3f} to {logistic['pr_auc']:.3f}; Brier score moves from {dummy_metrics['brier_score']:.3f} to {logistic['brier_score']:.3f}.</li>
+      <li><strong>Quality fields need definition checks.</strong> Bitrate plateaus at {average_bitrate['p50']:,.0f} and buffer duration reaches {buffer_duration['p95']:,.0f} at p95.</li>
     </ol>
     <p class="callout">These are event-level associations from a short export, not causal or user-level effects.</p>
   </section>

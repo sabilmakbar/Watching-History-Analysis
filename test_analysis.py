@@ -39,6 +39,14 @@ REQUIRED_EDA_SECTIONS = (
     "audience-context",
     "playback-quality",
 )
+TOPIC_STORIES = {
+    "viewing-time-story": ("daily-volume-chart", "hourly-volume-chart"),
+    "platform-content-story": ("platform-mix-chart", "content-mix-chart"),
+    "completion-story": ("completion-platform-chart", "completion-category-chart"),
+    "audience-story": ("audience-context-chart",),
+    "quality-story": ("playback-quality-chart",),
+    "model-story": ("model-metrics-chart", "model-coefficients-chart"),
+}
 
 
 def expect_assertion(action, message: str) -> None:
@@ -61,6 +69,20 @@ def assert_report_order(report: str) -> None:
         report.index(f'<section id="{section}">') < model_position
         for section in REQUIRED_EDA_SECTIONS
     ), "every EDA section must appear before model evidence"
+
+
+def assert_topic_story(report: str, story_id: str, chart_ids: tuple[str, ...]) -> None:
+    start = report.index(f'<article id="{story_id}"')
+    end = report.index("</article>", start)
+    story = report[start:end]
+    question = story.index('class="topic-question"')
+    evidence = story.index('class="topic-evidence"')
+    implication = story.index('class="topic-implication"')
+    charts = [story.index(f'id="{chart_id}"') for chart_id in chart_ids]
+    assert question < min(charts) <= max(charts) < evidence < implication
+    assert "<strong>Question:</strong>" in story
+    assert "<strong>Evidence:</strong>" in story
+    assert "<strong>Next question:</strong>" in story
 
 
 def main() -> None:
@@ -192,8 +214,21 @@ def main() -> None:
     assert "<h3>Data and approach</h3>" in report
     assert "<h2>What we found</h2>" in report
     assert '<ol class="executive-findings">' in report
+    assert report.count('class="topic-question"') == len(TOPIC_STORIES)
+    assert report.count('class="topic-evidence"') == len(TOPIC_STORIES)
+    assert report.count('class="topic-implication"') == len(TOPIC_STORIES)
+    for story_id, chart_ids in TOPIC_STORIES.items():
+        assert_topic_story(report, story_id, chart_ids)
+    quality_story = report[
+        report.index('<article id="quality-story"') : report.index(
+            "</article>", report.index('<article id="quality-story"')
+        )
+    ]
+    assert "viewing-experience signal" in quality_story
+    assert "fixed at 300,000 from the median through p99" in quality_story
+    assert "1,035 at p95" in quality_story
     findings = report[findings_position:method_position]
-    assert findings.count("<li>") == 7
+    assert findings.count("<li>") == 6
     for evidence in (
         "57.8%",
         "82.1%",
